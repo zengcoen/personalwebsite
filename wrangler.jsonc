@@ -10,8 +10,8 @@
     "run_worker_first": true
   },
   "routes": [
-    { "pattern": "coenzeng.com", "custom_domain": true },
-    { "pattern": "www.coenzeng.com", "custom_domain": true }
+    { "pattern": "coenzeng.com/*", "zone_name": "coenzeng.com" },
+    { "pattern": "www.coenzeng.com/*", "zone_name": "coenzeng.com" }
   ],
   "observability": {
     "enabled": true
