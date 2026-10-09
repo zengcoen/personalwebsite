@@ -1,4 +1,4 @@
-import { MILESTONE_YEARS, parseQuitDate } from "@/lib/projection";
+import { MILESTONE_YEARS, parseIsoDate } from "@/lib/projection";
 import { formatCurrency, formatQuitDate } from "@/lib/format";
 import type { PlannerState, Scenario, ScenarioResult, Settings } from "@/lib/types";
 
@@ -11,20 +11,20 @@ function decisionPoint(result: ScenarioResult) {
 function metricsFor(settings: Settings): Metric[] {
   const milestones: Metric[] = MILESTONE_YEARS.map((years): Metric => [
     `Net worth in ${years} years`,
-    (_, result) => formatCurrency(result.points[years].netWorth),
+    (_, result) => formatCurrency(result.milestones.find((m) => m.years === years)?.point.netWorth ?? 0),
   ]);
   return [
     ["Dollar basis", () => (settings.inflationOn ? `Today's dollars (${settings.inflationRate}% inflation)` : "Future (nominal) dollars")],
     ["Net worth goal", () => formatCurrency(settings.goal)],
     ["Province", (scenario) => (scenario.province === "ON" ? "Ontario" : "British Columbia")],
-    ["Years to goal", (_, result) => (result.yearsToGoal === null ? "Not reached in 60 years" : String(result.yearsToGoal))],
-    ["Goal year", (_, result) => (result.goalYear === null ? "" : String(result.goalYear))],
+    ["Years to goal", (_, result) => (result.yearsToGoal === null ? "Not reached in 60 years" : result.yearsToGoal.toFixed(1))],
+    ["Goal date", (_, result) => (result.goalDate === null ? "" : formatQuitDate(result.goalDate))],
     ...milestones,
-    ["Total invested (as of goal year or year 20)", (_, result) => formatCurrency(decisionPoint(result).principal)],
+    ["Total invested (as of goal date or year 20)", (_, result) => formatCurrency(decisionPoint(result).principal)],
     ["Investment growth", (_, result) => formatCurrency(decisionPoint(result).portfolio - decisionPoint(result).principal)],
     ["Cash not invested", (_, result) => formatCurrency(decisionPoint(result).cash)],
     ["Job income ends", (scenario) => {
-      const quit = parseQuitDate(scenario.quitDate);
+      const quit = parseIsoDate(scenario.quitDate);
       return quit ? formatQuitDate(scenario.quitDate) : "No quit date";
     }],
     ["Year 1 gross income", (_, result) => formatCurrency(result.yearOne.grossIncome)],
@@ -54,7 +54,7 @@ export function buildText(state: PlannerState, results: Record<string, ScenarioR
   const metrics = metricsFor(state.settings);
   const header = [
     "Net Worth Goal Calculator - Canada",
-    `Start year: ${state.settings.startYear}`,
+    `Start date: ${formatQuitDate(state.settings.startDate)}`,
     "",
   ];
   const blocks = state.scenarios.map((scenario) =>

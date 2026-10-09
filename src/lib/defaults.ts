@@ -18,11 +18,18 @@ export const DEFAULT_INPUTS: ScenarioInputs = {
   jobGrowth: 3,
   quitDate: "",
   selfIncome: 0,
-  selfGrowth: 0,
+  selfCeiling: 0,
+  selfHorizonYears: 10,
+  selfShape: "s-curve",
+  sInflectionYears: 5,
+  sSteepness: 5,
+  stepEveryMonths: 12,
+  stepMagnitude: 5000,
   selfExpenses: 0,
-  monthlyInvestment: 2000,
+  investmentPercent: 100,
   investmentReturn: 7,
   livingExpensesMonthly: 4000,
+  postQuitLivingMonthly: 4000,
 };
 
 export function makeId(): string {
@@ -39,13 +46,22 @@ export function pickColorIndex(scenarios: Scenario[]): number {
   return free === -1 ? scenarios.length % PALETTE.length : free;
 }
 
+// Today's date in the local timezone, as YYYY-MM-DD.
+export function todayIsoDate(): string {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
 export function createSettings(): Settings {
   return {
     goal: 1000000,
-    startYear: new Date().getFullYear(),
+    startDate: todayIsoDate(),
     currentAge: null,
     inflationOn: false,
     inflationRate: 2,
+    chartYears: 10,
   };
 }
 
@@ -59,9 +75,23 @@ export function createScenario(overrides: Partial<Scenario> = {}): Scenario {
   };
 }
 
+export function createDefaultScenarios(): Scenario[] {
+  return [
+    createScenario({ title: "Stay at Job", colorIndex: 0 }),
+    createScenario({
+      title: "Quit Job in 2027",
+      colorIndex: 1,
+      quitDate: "2027-07-16",
+      selfIncome: 0,
+      selfCeiling: 600000,
+      selfHorizonYears: 10,
+    }),
+  ];
+}
+
 export function createInitialState(): PlannerState {
   return {
     settings: createSettings(),
-    scenarios: [createScenario()],
+    scenarios: createDefaultScenarios(),
   };
 }

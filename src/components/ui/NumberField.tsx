@@ -12,20 +12,21 @@ type NumberFieldProps = {
   prefix?: string;
   suffix?: string;
   info?: string;
+  hideLabel?: boolean;
 };
 
 const displayFormatter = new Intl.NumberFormat("en-CA", { maximumFractionDigits: 2 });
 
-export function NumberField({ id, label, value, onChange, prefix, suffix, info }: NumberFieldProps) {
+export function NumberField({ id, label, value, onChange, prefix, suffix, info, hideLabel }: NumberFieldProps) {
   const [draft, setDraft] = useState<string | null>(null);
 
   const padding = prefix ? "pl-7 pr-3" : suffix ? "pl-3 pr-8" : "px-3";
 
   return (
-    <Field id={id} label={label} info={info}>
+    <Field id={id} label={label} info={info} hideLabel={hideLabel}>
       <div className="relative">
         {prefix && (
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-slate-500 dark:text-slate-400">
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-slate-500 dark:text-slate-300">
             {prefix}
           </span>
         )}
@@ -45,7 +46,7 @@ export function NumberField({ id, label, value, onChange, prefix, suffix, info }
           className={`${inputBase} ${padding}`}
         />
         {suffix && (
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-500 dark:text-slate-400">
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-500 dark:text-slate-300">
             {suffix}
           </span>
         )}

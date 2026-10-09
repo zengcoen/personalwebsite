@@ -30,6 +30,12 @@ export function formatYears(years: number): string {
   return `${years} ${years === 1 ? "year" : "years"}`;
 }
 
+// Exact elapsed years (fractional) shown as whole years. Anything under half a year reads as "Under 1 year".
+export function formatElapsedYears(years: number): string {
+  const rounded = Math.round(years);
+  return rounded === 0 ? "Under 1 year" : formatYears(rounded);
+}
+
 export function formatQuitDate(value: string): string {
   const [year, month, day] = value.split("-").map(Number);
   return longDate.format(new Date(Date.UTC(year, month - 1, day)));

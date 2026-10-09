@@ -1,17 +1,29 @@
 export type Province = "BC" | "ON";
 
+export type IncomeShape = "s-curve" | "stepwise";
+
 export type ScenarioInputs = {
   province: Province;
   currentNetWorth: number;
   jobIncome: number;
   jobGrowth: number;
   quitDate: string;
+  // Self-employment income curve: floor (selfIncome) to ceiling over a horizon, shaped by `selfShape`.
   selfIncome: number;
-  selfGrowth: number;
+  selfCeiling: number;
+  selfHorizonYears: number;
+  selfShape: IncomeShape;
+  // S-curve inflection point, in years from the start. Kept within the horizon.
+  sInflectionYears: number;
+  sSteepness: number;
+  stepEveryMonths: number;
+  stepMagnitude: number;
   selfExpenses: number;
-  monthlyInvestment: number;
+  // Share of spare cash (after-tax income minus living expenses) invested each month, 0 to 100.
+  investmentPercent: number;
   investmentReturn: number;
   livingExpensesMonthly: number;
+  postQuitLivingMonthly: number;
 };
 
 export type Scenario = ScenarioInputs & {
@@ -22,10 +34,13 @@ export type Scenario = ScenarioInputs & {
 
 export type Settings = {
   goal: number;
-  startYear: number;
+  // Exact projection start date (YYYY-MM-DD). The first projected year is prorated from this date.
+  startDate: string;
   currentAge: number | null;
   inflationOn: boolean;
   inflationRate: number;
+  // Length of every net worth chart in years. 0 means Auto (fits the goal date).
+  chartYears: number;
 };
 
 export type PlannerState = {
@@ -41,7 +56,12 @@ export type TaxBreakdown = {
 
 export type ProjectionPoint = {
   index: number;
+  // Calendar year label (year containing this point).
   year: number;
+  // Exact calendar position as a decimal year, e.g. 2026.77 for early October 2026.
+  decimalYear: number;
+  // Years elapsed since the start date.
+  elapsedYears: number;
   netWorth: number;
   portfolio: number;
   cash: number;
@@ -73,8 +93,10 @@ export type Milestone = {
 
 export type ScenarioResult = {
   points: ProjectionPoint[];
+  // Exact years from the start date to the goal (fractional), or null if not reached.
   yearsToGoal: number | null;
-  goalYear: number | null;
+  // Exact goal date (YYYY-MM-DD), or null if not reached.
+  goalDate: string | null;
   milestones: Milestone[];
   decisionIndex: number;
   yearOne: YearBreakdown;

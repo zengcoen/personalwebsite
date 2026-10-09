@@ -15,6 +15,79 @@ html.dark {
   color-scheme: dark;
 }
 
+/* Custom range slider: one look in light and dark mode. `--pct` is the filled share, set per slider. */
+.range-input {
+  --track: #e2e8f0;
+  --fill: #4f46e5;
+  --thumb: #ffffff;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+html.dark .range-input {
+  --track: #334155;
+  --fill: #818cf8;
+  --thumb: #e2e8f0;
+}
+
+.range-input:focus {
+  outline: none;
+}
+
+.range-input::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--fill) var(--pct), var(--track) var(--pct));
+}
+
+.range-input::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--track);
+}
+
+.range-input::-moz-range-progress {
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--fill);
+}
+
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border-radius: 9999px;
+  border: 2px solid var(--fill);
+  background: var(--thumb);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.25);
+  transition: box-shadow 150ms ease;
+}
+
+.range-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 2px solid var(--fill);
+  background: var(--thumb);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.25);
+}
+
+.range-input:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--fill) 30%, transparent);
+}
+
+.range-input:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--fill) 30%, transparent);
+}
+
 @keyframes column-in {
   from {
     opacity: 0;
